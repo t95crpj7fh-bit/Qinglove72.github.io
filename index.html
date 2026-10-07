@@ -4,8 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#f2f2f4">
-<link rel="apple-touch-icon" href="incon.PNG">
-<title>Q_Qing Chat</title>
+<link rel="apple-touch-icon" href="incon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="水箐之地">
+<title>水箐之地</title>
 <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.js"></script>
 <script>if(!window.lucide){document.write('<scr'+'ipt src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.js"><\/scr'+'ipt>');}</script>
 <style>
@@ -34,7 +37,6 @@ img{display:block}
 .avatar[data-shape="square"]{border-radius:0}
 b,strong,.btn,.block-title,.sv-title,.env-title,.rank-w,.chat-title{font-weight:500}
 
-/* ---------- 布局 ---------- */
 #app{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:920px;height:100vh;height:100dvh;display:flex;background:var(--chrome);overflow:hidden;box-shadow:0 0 60px rgba(0,0,0,.08)}
 #rail{flex:0 0 62px;display:flex;flex-direction:column;align-items:center;padding:14px 0 12px;gap:6px;background:var(--chrome);color:var(--chrome-ink);z-index:40}
 #railTopWrap{width:44px;height:44px;display:grid;place-items:center;cursor:pointer;border-radius:14px}
@@ -49,7 +51,6 @@ b,strong,.btn,.block-title,.sv-title,.env-title,.rank-w,.chat-title{font-weight:
 .nav-btn.has-dot::after{content:'';position:absolute;top:8px;right:8px;width:9px;height:9px;border-radius:50%;background:#ff3b30;border:2px solid var(--chrome)}
 #stage{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--chrome);position:relative}
 
-/* ---------- 顶部栏 ---------- */
 #topbar{flex:0 0 auto;height:58px;display:flex;align-items:center;gap:10px;padding:0 14px;background:var(--chrome);color:var(--chrome-ink);position:relative;z-index:35}
 .tb-me{display:flex;flex-direction:column;min-width:0;flex:1}
 .tb-name{font-size:14px;font-weight:500;line-height:1.2;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;align-self:flex-start;max-width:100%}
@@ -59,14 +60,12 @@ b,strong,.btn,.block-title,.sv-title,.env-title,.rank-w,.chat-title{font-weight:
 .deco-btn svg{width:16px;height:16px;flex:0 0 auto}
 .deco-btn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* ---------- 主区 ---------- */
 main{flex:1;min-height:0;position:relative;overflow:hidden;background:var(--bg);color:var(--text);border-radius:18px 0 0 0}
 .page{position:absolute;inset:0;overflow-y:auto;display:none;-webkit-overflow-scrolling:touch}
 .page.active{display:block}
 #page-chat.active{display:flex;flex-direction:column;overflow:hidden}
 #page-chat{background-color:var(--bg);background-size:cover;background-position:center}
 
-/* ---------- 聊天 ---------- */
 .chat-head{flex:0 0 auto;display:flex;align-items:center;gap:9px;margin:8px 12px 0;padding:7px 12px;border-radius:14px;background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(0,0,0,.05);box-shadow:0 2px 12px rgba(0,0,0,.04)}
 #chatAvatar{width:30px;height:30px;cursor:pointer;user-select:none}
 .chat-info{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1}
@@ -111,7 +110,6 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:var(--bg);
 .typing-bubble .dots span:nth-child(3){animation-delay:.36s}
 @keyframes typing{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
 
-/* 悬浮输入框 */
 .composer{flex:0 0 auto;display:flex;align-items:flex-end;gap:5px;margin:8px 12px 12px;padding:7px 9px;border-radius:22px;background:rgba(238,238,242,.94);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:0 8px 24px rgba(0,0,0,.10),0 1px 0 rgba(255,255,255,.9) inset,0 -1px 0 rgba(0,0,0,.03) inset}
 #msgInput{flex:1;border:none;background:transparent;border-radius:16px;padding:7px 8px;resize:none;max-height:78px;line-height:1.4;font-size:14px;overflow-y:auto;min-height:30px}
 .send-btn{width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex:0 0 auto}
@@ -124,7 +122,6 @@ main{flex:1;min-height:0;position:relative;overflow:hidden;background:var(--bg);
 .sticker-upload{width:100%;aspect-ratio:1;border-radius:12px;background:rgba(255,255,255,.7);border:1.5px dashed #d0d0d6;display:grid;place-items:center;cursor:pointer;color:#b0b0b8}
 .sticker-upload svg{width:20px;height:20px}
 
-/* ---------- 通用 ---------- */
 .pad{padding:16px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--accent);color:var(--accent-ink);border-radius:12px;padding:10px 16px;font-size:14px;font-weight:500;white-space:nowrap}
 .btn:active{opacity:.75}
@@ -227,7 +224,6 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:3px}
 
-/* ---------- 日历 ---------- */
 #calendar{width:100%;overflow:hidden;box-sizing:border-box}
 .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:13.5px;font-weight:500}
 .cal-head button{width:28px;height:28px;border-radius:9px;background:rgba(0,0,0,.05);display:grid;place-items:center;font-size:16px;line-height:1;flex:0 0 auto}
@@ -254,7 +250,6 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
 .spane{display:none}
 .spane.active{display:block}
 
-/* ---------- 信件 ---------- */
 .letter-top{display:flex;align-items:center;gap:12px;padding:20px 18px 8px}
 .letter-top>div{flex:1;min-width:0}
 .lt-title{font-size:22px;font-weight:300;letter-spacing:.08em}
@@ -286,7 +281,6 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
 .lc-ref{display:flex;align-items:center;gap:5px;margin:8px 0 2px;font-size:12px;color:#8e8e96;font-family:-apple-system,"PingFang SC",sans-serif;cursor:pointer}
 .lc-ref svg{width:12px;height:12px;flex:0 0 auto}
 
-/* ---------- 动态 ---------- */
 #page-moments{background:var(--bg)}
 .ins-head{padding:18px 16px 12px;border-bottom:1px solid rgba(0,0,0,.07);background:#fff;position:relative}
 .ins-top{display:flex;align-items:center;gap:16px}
@@ -331,7 +325,6 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
 .reply-hint span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .reply-hint button{color:#999;font-size:16px;line-height:1}
 
-/* ---------- 问卷 ---------- */
 .sv-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid rgba(0,0,0,.06);border-radius:18px;margin-bottom:10px;background:#fff}
 .sv-info{flex:1;min-width:0}
 .sv-title{font-size:14.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -367,7 +360,6 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
 .sve-opt{display:flex;align-items:center;gap:6px}
 .sve-opt input{flex:1;padding:8px 12px;font-size:13.5px}
 
-/* ---------- 状态纸条 ---------- */
 .status-wrap{display:flex;justify-content:center;align-items:center;width:100%}
 .status-card{position:relative;width:290px;background:#ffffff;padding:22px 22px 20px;box-shadow:0 20px 50px rgba(0,0,0,.22);border:1px solid #e5e5e5;animation:dialogIn .3s cubic-bezier(.25,.9,.4,1);color:#111;font-family:"SF Mono","Menlo",Consolas,"Courier New",monospace}
 .sc-deco{text-align:center;font-size:10px;letter-spacing:.32em;color:#999;margin-bottom:10px;text-transform:uppercase}
@@ -390,7 +382,6 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
 .barcode-num{text-align:center;font-size:9.5px;letter-spacing:.32em;color:#888;margin-bottom:6px}
 .sc-foot{text-align:center;font-size:9.5px;color:#aaa;letter-spacing:.24em;margin-top:10px}
 
-/* ---------- 一起听 ---------- */
 #page-listen.active{display:flex;flex-direction:column;overflow:hidden}
 .listen-page{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 20px 24px;overflow-y:auto;width:100%}
 .listen-page-head{width:100%;display:flex;align-items:center;padding:4px 0}
@@ -425,7 +416,6 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
 .listen-bubble.playing svg{animation:spin 3.5s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ---------- 通话 ---------- */
 .call-float{position:absolute;left:50%;top:84px;transform:translateX(-50%);width:min(300px,calc(100% - 28px));background:rgba(255,255,255,.78);-webkit-backdrop-filter:blur(26px) saturate(1.7);backdrop-filter:blur(26px) saturate(1.7);border:1px solid rgba(255,255,255,.8);border-radius:26px;padding:0 20px 18px;box-shadow:0 22px 60px rgba(60,40,90,.24);z-index:180;text-align:center;user-select:none;animation:callIn .34s cubic-bezier(.25,.9,.4,1)}
 .call-handle{padding:14px 0 8px;cursor:move;touch-action:none;display:flex;justify-content:center}
 .call-handle::before{content:'';width:38px;height:4px;border-radius:2px;background:rgba(60,60,67,.22)}
@@ -446,7 +436,6 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
 .call-bubble.calling .pulse{background:#ff9500}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* ---------- 通知 ---------- */
 #notifStack{position:fixed;top:calc(10px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:100%;max-width:456px;padding:0 12px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
 .pop{position:relative;display:flex;align-items:center;gap:12px;padding:11px 15px 11px 11px;border-radius:24px;pointer-events:auto;cursor:pointer;color:#1c1c1e;touch-action:none;user-select:none;-webkit-user-select:none;background:linear-gradient(135deg,rgba(255,255,255,.86),rgba(255,255,255,.55));-webkit-backdrop-filter:blur(22px) saturate(1.7);backdrop-filter:blur(22px) saturate(1.7);border:1px solid rgba(255,255,255,.75);box-shadow:0 12px 34px rgba(60,40,90,.16);animation:popIn .44s cubic-bezier(.2,.9,.3,1.08) backwards;transition:transform .22s ease}
 .pop.out{animation:popOut .24s ease forwards}
@@ -462,7 +451,6 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
 @keyframes popOut{to{opacity:0;transform:translateY(-16px) scale(.96)}}
 @media (prefers-reduced-motion:reduce){.pop{animation:none}}
 
-/* 批量条 */
 .batch-bar{position:absolute;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-top:1px solid rgba(0,0,0,.06);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center;z-index:15;flex-wrap:wrap;animation:sheetUp .25s cubic-bezier(.25,.9,.4,1)}
 .progress{font-size:12px;color:#8e8e96;padding:8px 0 0}
 .collapse-panel{display:none}
@@ -503,7 +491,6 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
     </header>
 
     <main id="main">
-      <!-- ================= 聊天 ================= -->
       <section class="page active" id="page-chat">
         <div class="chat-head">
           <img class="avatar" id="chatAvatar" data-shape="circle" alt="">
@@ -528,7 +515,6 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
         </div>
       </section>
 
-      <!-- ================= 字卡 ================= -->
       <section class="page" id="page-card">
         <div class="seg">
           <button class="seg-btn active" data-tab="cards">字卡</button>
@@ -602,7 +588,6 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
         </div>
       </section>
 
-      <!-- ================= 统计 ================= -->
       <section class="page" id="page-features">
         <div class="seg" id="statTabs">
           <button class="stab active" data-st="overview">概览</button>
@@ -658,7 +643,6 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
         </div>
       </section>
 
-      <!-- ================= 信件 ================= -->
       <section class="page" id="page-letter">
         <div class="letter-top">
           <div><div class="lt-title">信件</div><div class="muted" id="letterHint"></div></div>
@@ -687,7 +671,6 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
         </div>
       </section>
 
-      <!-- ================= 动态 ================= -->
       <section class="page" id="page-moments">
         <div class="ins-head">
           <button class="icon-btn ins-edit" id="btnEditPin" title="编辑置顶"><i data-lucide="pencil"></i></button>
@@ -724,10 +707,8 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
         <div id="momentList"></div>
       </section>
 
-      <!-- ================= 问卷 ================= -->
       <section class="page" id="page-survey"><div id="surveyRoot"></div></section>
 
-      <!-- ================= 一起听 ================= -->
       <section class="page" id="page-listen">
         <div class="listen-page">
           <div class="listen-page-head">
@@ -755,7 +736,6 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
         </div>
       </section>
 
-      <!-- ================= 设置 ================= -->
       <section class="page" id="page-settings">
         <div class="block">
           <div class="block-title">我的资料</div>
@@ -984,9 +964,6 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
 <input type="file" id="songFileInput" accept="audio/*" multiple hidden>
 
 <script>
-/* =========================================================
-   基础工具
-   ========================================================= */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const pick = a => a[Math.floor(Math.random() * a.length)];
@@ -1069,12 +1046,8 @@ const PROB = {
 const BURST_COUNT = [[1, 0.75], [2, 0.20], [3, 0.05]];
 const CALL_OUTCOMES = [['reject', 0.35], ['no-answer', 0.15], ['connect-stay', 0.25], ['connect-drop', 0.25]];
 
-/* 后台保活音频地址 */
 const KEEP_ALIVE_URL = 'https://mp3tourl.com/audio/1791256525884-1a37f450-f7ed-48ae-b96f-779728902494.mp3';
 
-/* =========================================================
-   数据库
-   ========================================================= */
 const DB_NAME = 'PrivateChatDB', DB_VER = 3;
 const STORES = ['messages', 'replyPool', 'stickers', 'cards', 'letters', 'moments', 'favorites', 'profile', 'songs'];
 let db = null;
@@ -1114,9 +1087,6 @@ function getOne(n, k) { return new Promise((res, rej) => { const r = store(n).ge
 function delOne(n, k) { return new Promise((res, rej) => { const r = store(n, 'readwrite').delete(k); r.onsuccess = () => res(); r.onerror = () => rej(r.error); }); }
 function clearOne(n) { return new Promise((res, rej) => { const r = store(n, 'readwrite').clear(); r.onsuccess = () => res(); r.onerror = () => rej(r.error); }); }
 
-/* =========================================================
-   状态
-   ========================================================= */
 let profile = {
   me: { key: 'me', name: '我', avatar: '', bio: '点我写签名', avatarShape: 'circle', decoIcon: 'sparkles', decoText: '' },
   other: { key: 'other', name: '小星', avatar: '', bio: '点我写签名', avatarShape: 'circle' }
@@ -1180,7 +1150,6 @@ const POP_META = {
 };
 function currentPageName() { const a = document.querySelector('.page.active'); return a ? a.id.replace('page-', '') : ''; }
 
-/* -------- 系统通知 -------- */
 async function requestNotifyPermission() {
   if (typeof Notification === 'undefined') return false;
   if (Notification.permission === 'granted') return true;
@@ -1209,16 +1178,14 @@ function sendSystemNotification(type, title, body) {
       try { n.close(); } catch (e) {}
       switchPage(info.page);
     };
-  } catch (e) { /* 某些环境不支持 */ }
+  } catch (e) {}
 }
 
 function pushNotif(type, title, body, onClick, force) {
   const info = POP_META[type] || POP_META.message;
   const pageFor = info.page;
-  // 前台且正停留在目标页面时，不打扰
   if (!document.hidden && !force && pageFor === currentPageName()) return;
   setRedDot(pageFor);
-  // 系统通知（后台/前台均可）
   sendSystemNotification(type, title, body);
   if (document.hidden) return;
   if (settings.popupEnabled === false) return;
@@ -1271,7 +1238,6 @@ function notifyOtherMessage(previews) {
   pushNotif('message', profile.other.name, previews.length > 1 ? `${last}　· 共 ${previews.length} 条` : last, () => {});
 }
 
-/* -------- 后台保活音频 -------- */
 let keepAliveAudio = null;
 function ensureKeepAliveAudio() {
   if (!keepAliveAudio) {
@@ -1287,7 +1253,7 @@ function ensureKeepAliveAudio() {
 function startKeepAlive() {
   const a = ensureKeepAliveAudio();
   const p = a.play();
-  if (p && p.catch) p.catch(() => { /* 等待用户交互后重试 */ });
+  if (p && p.catch) p.catch(() => {});
 }
 function stopKeepAlive() {
   if (keepAliveAudio) { try { keepAliveAudio.pause(); } catch (e) {} }
@@ -1297,9 +1263,6 @@ function syncKeepAlive() {
   else stopKeepAlive();
 }
 
-/* =========================================================
-   主题
-   ========================================================= */
 function inkFor(hex) {
   const h = String(hex || '#ffffff').replace('#', '');
   const r = parseInt(h.substr(0, 2), 16) || 0, g = parseInt(h.substr(2, 2), 16) || 0, b = parseInt(h.substr(4, 2), 16) || 0;
@@ -1351,9 +1314,6 @@ function bindTheme() {
   $('#chatBgClear').onclick = async () => { settings.chatImage = null; await saveSettings(); applyTheme(); toast('已清除背景图'); };
 }
 
-/* =========================================================
-   资料
-   ========================================================= */
 function applyProfile() {
   const ms = profile.me.avatarShape || 'circle', os = profile.other.avatarShape || 'circle';
   const rta = $('#railTopAvatar');
@@ -1375,9 +1335,6 @@ function applyProfile() {
 }
 function isDndOn() { return meta.dndUntil && Date.now() < meta.dndUntil; }
 
-/* =========================================================
-   切换页面
-   ========================================================= */
 function switchPage(name) {
   $$('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + name));
   $$('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === name));
@@ -1394,9 +1351,6 @@ function switchPage(name) {
   icons();
 }
 
-/* =========================================================
-   弹层
-   ========================================================= */
 function showSheet(items) {
   const mask = document.createElement('div'); mask.className = 'sheet-mask';
   const sheet = document.createElement('div'); sheet.className = 'sheet';
@@ -1456,9 +1410,6 @@ function bindLongPress(el, cb) {
   el.addEventListener('contextmenu', e => { e.preventDefault(); cancel(); cb(); });
 }
 
-/* =========================================================
-   数据初始化
-   ========================================================= */
 async function seed() {
   const me = await getOne('profile', 'me');
   if (!me) {
@@ -1504,9 +1455,6 @@ async function saveSettings() { await put('profile', Object.assign({ key: 'setti
 async function saveMeta() { await put('profile', Object.assign({ key: 'meta' }, meta)); }
 async function saveGroups() { await put('profile', { key: 'groups', card: groupStore.card, status: groupStore.status, blockedCard: groupStore.blockedCard, blockedStatus: groupStore.blockedStatus }); }
 
-/* =========================================================
-   字卡抽取
-   ========================================================= */
 async function pickFromPool(type, excludeId) {
   const all = await getAll('replyPool');
   const blocked = groupStore.blockedStatus || [];
@@ -1562,16 +1510,27 @@ async function pickJoinedText() {
 async function pickMessageText() { return settings.joinCards ? pickJoinedText() : pickCardText(); }
 async function pickMomentText() { return settings.momentJoin ? pickJoinedText() : pickCardText(); }
 
-/* =========================================================
-   状态纸条
-   ========================================================= */
 let statusCardTimers = [];
+let statusCardCache = { mood: '—', status: '—', expiresAt: 0 };
+
 async function showStatusCard() {
   clearStatusCardTimers();
-  const moodItem = settings.enabledTypes.mood ? await pickFromPool('mood') : null;
-  const statusItem = settings.enabledTypes.status ? await pickFromPool('status', moodItem && moodItem.id) : null;
-  const mood = moodItem ? moodItem.content : '—';
-  const status = statusItem ? statusItem.content : '—';
+  const refreshMs = Math.max(5, Number(settings.statusRefresh) || 30) * 1000;
+  const now = Date.now();
+
+  // 核心：若未超过刷新间隔，复用缓存值，不再重新抽取（修复"打开就刷新"问题）
+  let mood, status;
+  if (now < statusCardCache.expiresAt) {
+    mood = statusCardCache.mood;
+    status = statusCardCache.status;
+  } else {
+    const moodItem = settings.enabledTypes.mood ? await pickFromPool('mood') : null;
+    const statusItem = settings.enabledTypes.status ? await pickFromPool('status', moodItem && moodItem.id) : null;
+    mood = moodItem ? moodItem.content : '—';
+    status = statusItem ? statusItem.content : '—';
+    statusCardCache = { mood, status, expiresAt: now + refreshMs };
+  }
+
   const mask = document.createElement('div');
   mask.className = 'sheet-mask';
   mask.style.alignItems = 'center';
@@ -1601,22 +1560,25 @@ async function showStatusCard() {
   mask.addEventListener('click', e => { if (e.target === mask) { mask.remove(); clearStatusCardTimers(); } });
   document.body.appendChild(mask); icons();
   $('#scClose', mask).onclick = () => { mask.remove(); clearStatusCardTimers(); };
-  const refreshMs = Math.max(5, Number(settings.statusRefresh) || 30) * 1000;
-  const refresh = async () => {
-    const mItem = settings.enabledTypes.mood ? await pickFromPool('mood') : null;
-    const sItem = settings.enabledTypes.status ? await pickFromPool('status', mItem && mItem.id) : null;
-    const mEl = $('#scMood span:last-child', mask), sEl = $('#scStatus span:last-child', mask), tEl = $('#scTime', mask);
-    if (mEl && mItem) { mEl.style.opacity = 0; setTimeout(() => { mEl.textContent = mItem.content; mEl.style.opacity = 1; }, 200); }
-    if (sEl && sItem) { sEl.style.opacity = 0; setTimeout(() => { sEl.textContent = sItem.content; sEl.style.opacity = 1; }, 200); }
+
+  // 定时刷新：以 refreshMs 为间隔刷新，每次刷新也更新缓存
+  const timer = setInterval(async () => {
+    const moodItem = settings.enabledTypes.mood ? await pickFromPool('mood') : null;
+    const statusItem = settings.enabledTypes.status ? await pickFromPool('status', moodItem && moodItem.id) : null;
+    const m = moodItem ? moodItem.content : '—';
+    const s = statusItem ? statusItem.content : '—';
+    statusCardCache = { mood: m, status: s, expiresAt: Date.now() + refreshMs };
+    const mEl = $('#scMood span:last-child', mask);
+    const sEl = $('#scStatus span:last-child', mask);
+    const tEl = $('#scTime', mask);
+    if (mEl) { mEl.style.opacity = 0; setTimeout(() => { mEl.textContent = m; mEl.style.opacity = 1; }, 200); }
+    if (sEl) { sEl.style.opacity = 0; setTimeout(() => { sEl.textContent = s; sEl.style.opacity = 1; }, 200); }
     if (tEl) tEl.textContent = shortTime(Date.now());
-  };
-  statusCardTimers.push(setInterval(refresh, refreshMs));
+  }, refreshMs);
+  statusCardTimers.push(timer);
 }
 function clearStatusCardTimers() { statusCardTimers.forEach(t => clearInterval(t)); statusCardTimers = []; }
 
-/* =========================================================
-   聊天渲染
-   ========================================================= */
 function showTyping() {
   if (!settings.typingIndicator) return;
   const list = $('#chatList'); if (!list) return;
@@ -1731,9 +1693,6 @@ function bindOtherAvatarTap(el) {
   el.addEventListener('click', () => showStatusCard());
 }
 
-/* =========================================================
-   发送 / 回复
-   ========================================================= */
 async function sendText() {
   const input = $('#msgInput');
   const text = input.value.trim();
@@ -1862,9 +1821,6 @@ function markReadAndReply(myMsgId) {
 }
 async function otherSendRandom() { return sendOtherBurst(); }
 
-/* =========================================================
-   通话
-   ========================================================= */
 function removeCall() {
   if (activeCall) {
     try { activeCall.destroy && activeCall.destroy(); } catch (e) {}
@@ -2110,9 +2066,6 @@ async function logCall(text) {
   if (body) pushNotif('call', profile.other.name, body, () => {}, true);
 }
 
-/* =========================================================
-   消息菜单
-   ========================================================= */
 async function favMsg(id) {
   const m = await getOne('messages', id); if (!m) return;
   await add('favorites', { sender: m.sender, content: m.content || '[图片]', msgId: m.id, timestamp: Date.now() });
@@ -2161,9 +2114,6 @@ async function renderStickerPanel() {
   });
 }
 
-/* =========================================================
-   主动行为
-   ========================================================= */
 async function otherReactToMoment() {
   const list = await reactableMoments(); if (!list.length) return;
   const m = pick(list);
@@ -2329,9 +2279,6 @@ async function tryOtherLetter(force) {
   return true;
 }
 
-/* =========================================================
-   字卡页面
-   ========================================================= */
 async function renderCardPage() {
   await renderCardsTree();
   await renderStatusTree();
@@ -2760,9 +2707,6 @@ function updateStickerBatchBar() {
   });
 }
 
-/* =========================================================
-   统计
-   ========================================================= */
 let statTab = 'overview', wordScopeKey = 'all', _segmenter = null;
 const STOP_WORDS = new Set('的 了 是 我 你 在 不 就 也 都 和 有 吗 呢 吧 啊 呀 哦 嗯 这 那 要 会 到 说 我们 你们 他们 一个 什么 没有 可以 自己 还是 因为 所以 但是 如果 然后 这个 那个 一下 现在 已经 还有 觉得 知道 怎么 为什么 一样 不是 就是 真的 还是 可能 应该 时候 一点 这样 那样 的话 而且 或者'.split(' '));
 function segWords(text) {
@@ -2927,9 +2871,6 @@ async function generateCard() {
   $('#downloadCard').onclick = () => c.toBlob(b => download(b, `chat-card-${Date.now()}.png`), 'image/png');
 }
 
-/* =========================================================
-   信件
-   ========================================================= */
 let letterFilter = 'all';
 function letterLabel(l) { return l.from === 'other' ? `${profile.other.name}的来信` : `致 ${l.to || profile.other.name}`; }
 function letterRef(l, byId) {
@@ -3047,9 +2988,6 @@ async function saveLetter() {
 }
 async function openLetterById(id) { const l = await getOne('letters', id); if (l) readLetter(l); }
 
-/* =========================================================
-   动态
-   ========================================================= */
 async function renderMoments() {
   const list = (await getAll('moments')).sort((a, b) => b.timestamp - a.timestamp);
   const others = list.filter(m => m.author === 'other');
@@ -3178,9 +3116,6 @@ function openCommentMenu(momentId, cid) {
   ]);
 }
 
-/* =========================================================
-   问卷
-   ========================================================= */
 const BUILTIN_SURVEYS = [
   { id: 'b-sync', title: '默契小测试', builtin: true, comment: false, questions: [
     { q: '周末更想怎么过？', options: ['窝在家里', '出去走走', '见朋友', '睡到自然醒'] },
@@ -3358,7 +3293,6 @@ async function receiveSurveyInvite() {
   pushNotif('survey', profile.other.name, `邀请你填写问卷「${sv.title}」`, () => {});
   if ($('#page-survey').classList.contains('active')) renderSurvey();
 }
-/* 只有题目勾选了评论才会评论 */
 function pickSurveyAnswer(qi, oi) {
   const r = surveyRun; if (!r || r.stage !== 'running') return;
   const a = r.answers[qi]; if (!a || a.mine != null || a.redoPending) return;
@@ -3539,9 +3473,6 @@ function surveyInputTitle(ev) {
   if (ev.target.id === 'sveTitle') surveyEditor.title = ev.target.value;
 }
 
-/* =========================================================
-   一起听
-   ========================================================= */
 const listenState = { songs: [], idx: -1, playing: false, open: false, el: null, bubbleEl: null };
 let audioEl = null, listenSwitchTimer = null, listenTickTimer = null;
 
@@ -3769,9 +3700,6 @@ function startListenLoop() {
   }, rand(PROB.otherSwitchCheckMin, PROB.otherSwitchCheckMax) * 1000);
 }
 
-/* =========================================================
-   设置
-   ========================================================= */
 async function renderSettings() {
   $('#setMyName').value = profile.me.name;
   $('#setMyBio').value = profile.me.bio || '';
@@ -3857,9 +3785,6 @@ function renderJoinSettings() {
   $('#joinOpts').style.opacity = on ? '1' : '.45';
 }
 
-/* =========================================================
-   导入导出
-   ========================================================= */
 function dateTag() { const d = new Date(); return `${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}`; }
 function legacyCopy(text) {
   const ta = document.createElement('textarea');
@@ -4062,9 +3987,6 @@ async function clearAll() {
   toast('已清空');
 }
 
-/* =========================================================
-   装饰图标
-   ========================================================= */
 const DECO_ICONS = ['sparkles', 'star', 'heart', 'zap', 'moon', 'sun', 'coffee', 'music', 'camera', 'feather', 'cloud', 'flame', 'leaf', 'bell', 'bookmark', 'smile', 'ghost', 'droplet', 'wind', 'snowflake'];
 function openDecoDialog() {
   const mask = document.createElement('div');
@@ -4107,9 +4029,6 @@ function openDecoDialog() {
   };
 }
 
-/* =========================================================
-   UI 绑定
-   ========================================================= */
 function bindUI() {
   $$('.nav-btn').forEach(b => b.onclick = () => { if (b.dataset.page) switchPage(b.dataset.page); });
   $('#btnDeco').onclick = openDecoDialog;
@@ -4236,13 +4155,11 @@ function bindUI() {
   $('#stickerBatchMode').onclick = () => { stickerBatchMode = !stickerBatchMode; pickedStickers.clear(); renderStickerLib(); };
   $('#genCardBtn').onclick = generateCard;
 
-  // 信件
   $('#letterSave').onclick = saveLetter;
   $('#btnWriteLetter').onclick = () => openCompose(null);
   $('#letterCancel').onclick = closeCompose;
   $('#letterFilter').onclick = e => { const c = e.target.closest('[data-lf]'); if (c) { letterFilter = c.dataset.lf; renderLetters(); } };
 
-  // 动态
   $('#momentPostHead').onclick = () => {
     const p = $('#momentPost');
     p.classList.toggle('collapsed');
@@ -4298,7 +4215,6 @@ function bindUI() {
     };
   };
 
-  // 一起听
   $('#listenMinBtn').onclick = minimizeListen;
   $('#listenCloseBtn').onclick = () => {
     if (audioEl) audioEl.pause();
@@ -4318,7 +4234,6 @@ function bindUI() {
     e.target.value = '';
   };
 
-  // 设置
   $('#setMyAvatarFile').onchange = async e => { const f = e.target.files[0]; if (!f) return; const url = await fileToDataURL(f); const a = $('#setMyAvatar'); a.src = url; a.dataset.shape = profile.me.avatarShape || 'circle'; e.target.value = ''; };
   $('#setOtherAvatarFile').onchange = async e => { const f = e.target.files[0]; if (!f) return; const url = await fileToDataURL(f); const a = $('#setOtherAvatar'); a.src = url; a.dataset.shape = profile.other.avatarShape || 'circle'; e.target.value = ''; };
   $$('#shapeSegMe .shape-btn').forEach(b => b.onclick = () => { profile.me.avatarShape = b.dataset.shape; $$('#shapeSegMe .shape-btn').forEach(x => x.classList.toggle('active', x === b)); const a = $('#setMyAvatar'); a.dataset.shape = b.dataset.shape; });
@@ -4474,9 +4389,6 @@ function bindUI() {
   });
 }
 
-/* =========================================================
-   表情包导入
-   ========================================================= */
 function testImage(url) {
   return new Promise(res => {
     let done = false; const img = new Image();
@@ -4512,9 +4424,6 @@ async function importStickerUrls() {
   toast(`成功 ${ok}，失败 ${fail}`);
 }
 
-/* =========================================================
-   启动
-   ========================================================= */
 (async function init() {
   try {
     await openDB();
@@ -4541,7 +4450,6 @@ async function importStickerUrls() {
       if (Date.now() >= meta.dndUntil) endDnd();
       else dndAutoTimer = setTimeout(endDnd, meta.dndUntil - Date.now() + 500);
     }
-    // 用户首次交互时尝试恢复保活音频
     const resumeKeepAlive = () => {
       if (settings.keepAlive && keepAliveAudio && keepAliveAudio.paused) startKeepAlive();
     };
