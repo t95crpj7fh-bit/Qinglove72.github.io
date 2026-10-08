@@ -2,7 +2,6 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#f2f2f4">
 <link rel="apple-touch-icon" href="incon.PNG">
@@ -786,7 +785,7 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
             <div class="switch on" id="swRead"></div>
           </div>
           <div class="switch-row">
-            <div class="sr-t"><b>已读不回</b><span>开启后对方有概率已读不回（发生在已读标记之后）</span></div>
+            <div class="sr-t"><b>已读不回</b><span>开启后对方有概率已读不回（约 18.7%）</span></div>
             <div class="switch" id="swReadNoReply"></div>
           </div>
           <div class="switch-row">
@@ -959,7 +958,7 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
 </div>
 <div id="notifStack"></div>
 <input type="file" id="chatAvatarFile" accept="image/*" hidden>
-<input type="file" id="songFileInput" accept="audio/*" multiple hidden>
+<input type="file" id="songFileInput" accept="audio/*,.mp3,.m4a,.wav,.ogg,.flac,.aac,.opus,.weba,.webm" multiple hidden>
 
 <script>
 const $ = (s, r = document) => r.querySelector(s);
@@ -1026,7 +1025,7 @@ const QUOTE_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 const CHECK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
 
 const PROB = {
-  readNoReply: 0.22,
+  readNoReply: 0.187,       // 已读不回：从 0.22 下调 15% → 0.187
   quote: 0.3,
   commentReply: 0.5,
   callDrop: 0.5,
@@ -1106,7 +1105,7 @@ let settings = {
   systemNotify: false,
   keepAlive: false
 };
-let meta = { lastOtherLetter: '', myLetterAt: 0, pendingReplies: [], dndUntil: 0, surveyInvite: null, listenSeconds: 0 };
+let meta = { lastOtherLetter: '', myLetterAt: 0, pendingReplies: [], dndUntil: 0, surveyInvite: null, listenSeconds: 0, lastLetterTime: 0 };
 let groupStore = { card: ['默认'], status: [], blockedCard: [], blockedStatus: [] };
 let currentQuote = null;
 let replyTimer = null, typingTimer = null;
@@ -2198,7 +2197,6 @@ function autoDelayMs() {
   return rand(lo, hi);
 }
 
-// 通用运行条件：是否允许对方活动
 function autoCanRun() {
   return settings.autoActive && (!document.hidden || settings.keepAlive);
 }
@@ -2223,7 +2221,6 @@ async function runMsgTick() {
     if (autoCanRun()) {
       await maybeToggleDnd();
       if (!isDndOn()) {
-        // 到点必定触发一次消息（文字或表情）
         const kinds = await burstKinds();
         if (kinds.length) await sendOtherBurst();
       }
@@ -2288,19 +2285,29 @@ async function runPostTick() {
   schedulePostTick();
 }
 
-/* ---------- 池 5：信件池 ---------- */
+/* ---------- 池 5：信件池（24 小时内必定一封） ---------- */
 let letterTickTimer = null;
 function scheduleLetterTick() {
   if (letterTickTimer) clearTimeout(letterTickTimer);
-  const delay = rand(15, 60) * 60000;
+  // 每 20~40 分钟检查一次，确保 24 小时内能捕捉到时间点
+  const delay = rand(20, 40) * 60000;
   letterTickTimer = setTimeout(runLetterTick, delay);
 }
 async function runLetterTick() {
   try {
     if (autoCanRun() && !isDndOn()) {
-      const today = new Date().toDateString();
-      if (meta.lastOtherLetter !== today && Math.random() < 0.15) {
-        await tryOtherLetter(true);
+      const now = Date.now();
+      const last = meta.lastLetterTime || 0;
+      // 距上次写信超过 24 小时，必定写一封
+      if (now - last >= 24 * 3600 * 1000) {
+        const cards = await usableTextCards();
+        if (cards.length) {
+          const ok = await tryOtherLetter(true);
+          if (ok) {
+            meta.lastLetterTime = Date.now();
+            await saveMeta();
+          }
+        }
       }
     }
   } catch (e) { console.error(e); }
@@ -2366,6 +2373,7 @@ async function tryOtherLetter(force) {
   await add('messages', { sender: 'system', type: 'letter', content: `${profile.other.name} 给你写了一封信 · 点击查看`, letterId, timestamp: Date.now() });
   pushNotif('letter', profile.other.name, '给你写了一封信', () => openLetterById(letterId));
   meta.lastOtherLetter = today;
+  meta.lastLetterTime = Date.now();  // 更新 24 小时计时
   await saveMeta();
   if ($('#page-chat').classList.contains('active')) renderMessages();
   if ($('#page-letter').classList.contains('active')) renderLetters();
@@ -2373,10 +2381,30 @@ async function tryOtherLetter(force) {
 }
 
 async function renderCardPage() {
+  await fillGroupSelects();
   await renderCardsTree();
   await renderStatusTree();
   await renderStickerLib();
   await renderSettingsPools();
+}
+// 填充「添加字卡」「添加状态」里的分类下拉框
+async function fillGroupSelects() {
+  const cardGroups = await allCardGroups();
+  const cardSel = $('#cardGroupSel');
+  if (cardSel) {
+    const cur = cardSel.value;
+    cardSel.innerHTML = cardGroups.map(g => `<option value="${esc(g)}">${esc(g)}</option>`).join('');
+    if (cardGroups.includes(cur)) cardSel.value = cur;
+    else if (cardGroups.length) cardSel.value = cardGroups[0];
+  }
+  const statusGroups = await allStatusGroups();
+  const statusSel = $('#statusGroupSel');
+  if (statusSel) {
+    const cur = statusSel.value;
+    statusSel.innerHTML = '<option value="">（无分组）</option>' + statusGroups.map(g => `<option value="${esc(g)}">${esc(g)}</option>`).join('');
+    if (statusGroups.includes(cur) || cur === '') statusSel.value = cur;
+    else statusSel.value = '';
+  }
 }
 async function allCardGroups() {
   const cards = await getAll('cards');
@@ -2444,13 +2472,13 @@ async function renderCardsTree() {
             groupStore.blockedCard = (groupStore.blockedCard || []).filter(x => x !== g);
             const cards = await getAll('cards');
             for (const c of cards) { if ((c.group || '默认') === g) { c.group = '默认'; await put('cards', c); } }
-            await saveGroups(); renderCardsTree();
+            await saveGroups(); renderCardPage();
           }},
           { icon: isBlocked ? 'eye' : 'eye-off', label: isBlocked ? '取消屏蔽' : '屏蔽该分组', fn: async () => {
             const arr = groupStore.blockedCard || [];
             if (arr.includes(g)) groupStore.blockedCard = arr.filter(x => x !== g);
             else groupStore.blockedCard = [...arr, g];
-            await saveGroups(); renderCardsTree(); renderSettingsPools();
+            await saveGroups(); renderCardPage();
           }}
         ]);
       }, 620);
@@ -2472,7 +2500,7 @@ async function renderCardsTree() {
         { icon: 'folder', label: '移动到分组…', fn: () => moveCardTo(c) },
         { icon: c.blocked ? 'eye' : 'eye-off', label: c.blocked ? '取消屏蔽' : '屏蔽', fn: async () => { c.blocked = !c.blocked; await put('cards', c); renderCardsTree(); } },
         { icon: 'copy', label: '复制文字', fn: () => { if (c.text) { navigator.clipboard?.writeText(c.text); toast('已复制'); } } },
-        { icon: 'trash-2', label: '删除', danger: true, fn: async () => { await delOne('cards', id); renderCardsTree(); } }
+        { icon: 'trash-2', label: '删除', danger: true, fn: async () => { await delOne('cards', id); renderCardPage(); } }
       ]);
     };
   });
@@ -2533,13 +2561,13 @@ async function renderStatusTree() {
             groupStore.blockedStatus = (groupStore.blockedStatus || []).filter(x => x !== g);
             const pool = await getAll('replyPool');
             for (const r of pool) { if ((r.group || '') === g) await delOne('replyPool', r.id); }
-            await saveGroups(); renderStatusTree(); renderSettingsPools();
+            await saveGroups(); renderCardPage();
           }},
           { icon: isBlocked ? 'eye' : 'eye-off', label: isBlocked ? '取消屏蔽' : '屏蔽该分组', fn: async () => {
             const arr = groupStore.blockedStatus || [];
             if (arr.includes(g)) groupStore.blockedStatus = arr.filter(x => x !== g);
             else groupStore.blockedStatus = [...arr, g];
-            await saveGroups(); renderStatusTree(); renderSettingsPools();
+            await saveGroups(); renderCardPage();
           }}
         ]);
       }, 620);
@@ -2562,14 +2590,14 @@ async function renderStatusTree() {
 }
 async function moveCardTo(c) {
   const groups = await allCardGroups();
-  const items = groups.map(g => ({ icon: 'folder', label: g, fn: async () => { c.group = g; await put('cards', c); renderCardsTree(); } }));
+  const items = groups.map(g => ({ icon: 'folder', label: g, fn: async () => { c.group = g; await put('cards', c); renderCardPage(); } }));
   items.push({ icon: 'plus', label: '新建分组…', fn: async () => {
     showInputDialog({
       title: '新分组名称', placeholder: '输入分组名称',
       onSave: async name => {
         if (!name) return;
         if (!groupStore.card.includes(name)) { groupStore.card.push(name); await saveGroups(); }
-        c.group = name; await put('cards', c); renderCardsTree();
+        c.group = name; await put('cards', c); renderCardPage();
       }
     });
   }});
@@ -2594,7 +2622,7 @@ function updateBatchBar() {
       <button class="btn danger sm" id="batchDelete">删除</button>
       <button class="btn sm" id="batchExit">完成</button>`;
     $('main').appendChild(bar); icons();
-    $('#batchExit', bar).onclick = () => { batchMode = false; pickedCards.clear(); renderCardsTree(); };
+    $('#batchExit', bar).onclick = () => { batchMode = false; pickedCards.clear(); renderCardPage(); };
     $('#batchAll', bar).onclick = async () => {
       const all = (await getAll('cards')).map(c => c.id);
       if (pickedCards.size === all.length) pickedCards.clear();
@@ -2605,7 +2633,7 @@ function updateBatchBar() {
       if (!pickedCards.size) { toast('请先选择'); return; }
       if (!confirm(`删除选中的 ${pickedCards.size} 张？`)) return;
       for (const id of pickedCards) await delOne('cards', id);
-      pickedCards.clear(); renderCardsTree(); toast('已删除');
+      pickedCards.clear(); renderCardPage(); toast('已删除');
     };
     $('#batchBlock', bar).onclick = async () => {
       if (!pickedCards.size) { toast('请先选择'); return; }
@@ -2613,14 +2641,14 @@ function updateBatchBar() {
       for (const id of pickedCards) { const c = await getOne('cards', id); if (c) cards.push(c); }
       const allBlocked = cards.every(c => c.blocked);
       for (const c of cards) { c.blocked = !allBlocked; await put('cards', c); }
-      pickedCards.clear(); renderCardsTree();
+      pickedCards.clear(); renderCardPage();
     };
     $('#batchMove', bar).onclick = async () => {
       if (!pickedCards.size) { toast('请先选择'); return; }
       const groups = await allCardGroups();
       const items = groups.map(g => ({ icon: 'folder', label: g, fn: async () => {
         for (const id of pickedCards) { const c = await getOne('cards', id); if (c) { c.group = g; await put('cards', c); } }
-        pickedCards.clear(); renderCardsTree();
+        pickedCards.clear(); renderCardPage();
       }}));
       showSheet(items);
     };
@@ -2640,7 +2668,7 @@ function updateStatusBatchBar() {
       <button class="btn danger sm" id="statusBatchDelete">删除</button>
       <button class="btn sm" id="statusBatchExit">完成</button>`;
     $('main').appendChild(bar); icons();
-    $('#statusBatchExit', bar).onclick = () => { statusBatchMode = false; pickedStatusIds.clear(); renderStatusTree(); };
+    $('#statusBatchExit', bar).onclick = () => { statusBatchMode = false; pickedStatusIds.clear(); renderCardPage(); };
     $('#statusBatchAll', bar).onclick = async () => {
       const all = (await getAll('replyPool')).map(r => r.id);
       if (pickedStatusIds.size === all.length) pickedStatusIds.clear();
@@ -2651,7 +2679,7 @@ function updateStatusBatchBar() {
       if (!pickedStatusIds.size) { toast('请先选择'); return; }
       if (!confirm(`删除选中的 ${pickedStatusIds.size} 条？`)) return;
       for (const id of pickedStatusIds) await delOne('replyPool', id);
-      pickedStatusIds.clear(); renderStatusTree(); renderSettingsPools(); toast('已删除');
+      pickedStatusIds.clear(); renderCardPage(); toast('已删除');
     };
   }
   const cnt = $('#statusBatchCount'); if (cnt) cnt.textContent = `已选 ${pickedStatusIds.size} 项`;
@@ -2681,7 +2709,7 @@ async function batchImportText() {
   await saveGroups();
   $('#batchText').value = '';
   $('#batchProgress').textContent = `已导入 ${added} 张${dup ? `，跳过重复 ${dup} 张` : ''}`;
-  renderCardsTree();
+  renderCardPage();
 }
 async function addSingleCard() {
   const t = $('#cardText').value.trim(); if (!t) { toast('请输入内容'); return; }
@@ -2690,7 +2718,7 @@ async function addSingleCard() {
   const group = $('#cardGroupSel').value || '默认';
   if (!groupStore.card.includes(group)) { groupStore.card.push(group); await saveGroups(); }
   await add('cards', { text: t, group, timestamp: Date.now() });
-  $('#cardText').value = ''; renderCardsTree(); toast('已保存');
+  $('#cardText').value = ''; renderCardPage(); toast('已保存');
 }
 async function dedupeCards() {
   const cards = await getAll('cards');
@@ -2701,7 +2729,7 @@ async function dedupeCards() {
   const total = dups.reduce((s, a) => s + a.length - 1, 0);
   if (!confirm(`发现 ${dups.length} 组重复，共可清理 ${total} 张。继续？`)) return;
   for (const arr of dups) { arr.sort((a, b) => a.timestamp - b.timestamp); for (let i = 1; i < arr.length; i++) await delOne('cards', arr[i].id); }
-  renderCardsTree(); toast(`已清理 ${total} 张`);
+  renderCardPage(); toast(`已清理 ${total} 张`);
 }
 async function addStatus() {
   const t = $('#statusInput').value.trim(); if (!t) return;
@@ -2711,7 +2739,7 @@ async function addStatus() {
   if (group && !groupStore.status.includes(group)) { groupStore.status.push(group); await saveGroups(); }
   await add('replyPool', { content: t, group });
   $('#statusInput').value = '';
-  renderStatusTree(); renderSettingsPools(); toast('已添加');
+  renderCardPage(); toast('已添加');
 }
 async function batchImportStatus() {
   const raw = $('#batchStatusText').value;
@@ -2736,7 +2764,7 @@ async function batchImportStatus() {
   await saveGroups();
   $('#batchStatusText').value = '';
   $('#batchStatusProgress').textContent = `已导入 ${added} 条${dup ? `，跳过重复 ${dup} 条` : ''}`;
-  renderStatusTree(); renderSettingsPools(); toast(`导入 ${added} 条`);
+  renderCardPage(); toast(`导入 ${added} 条`);
 }
 async function dedupeStatus() {
   const pool = await getAll('replyPool');
@@ -2746,7 +2774,7 @@ async function dedupeStatus() {
     if (seen.has(k)) { await delOne('replyPool', r.id); removed++; }
     else seen.add(k);
   }
-  renderStatusTree(); renderSettingsPools();
+  renderCardPage();
   toast(removed ? `已清理 ${removed} 条` : '没有发现重复');
 }
 async function renderStickerLib() {
@@ -3759,20 +3787,47 @@ function addSongDialog() {
   };
   setTimeout(() => $('#sUrl', mask).focus(), 100);
 }
+// 判断文件是否是音频（兼容 type 为空 / 各种扩展名的情况）
+function isAudioFile(f) {
+  if (!f) return false;
+  if (f.type && f.type.startsWith('audio/')) return true;
+  const name = (f.name || '').toLowerCase();
+  return /\.(mp3|m4a|wav|ogg|oga|flac|aac|opus|weba|webm|m4b|mp4|aiff|aif|wma)$/.test(name);
+}
+// 根据扩展名推断 MIME
+function mimeFromName(name) {
+  const n = (name || '').toLowerCase();
+  if (n.endsWith('.mp3')) return 'audio/mpeg';
+  if (n.endsWith('.m4a')) return 'audio/mp4';
+  if (n.endsWith('.wav')) return 'audio/wav';
+  if (n.endsWith('.ogg') || n.endsWith('.oga')) return 'audio/ogg';
+  if (n.endsWith('.flac')) return 'audio/flac';
+  if (n.endsWith('.aac')) return 'audio/aac';
+  if (n.endsWith('.opus')) return 'audio/opus';
+  if (n.endsWith('.weba')) return 'audio/webm';
+  if (n.endsWith('.webm')) return 'audio/webm';
+  if (n.endsWith('.m4b')) return 'audio/mp4';
+  if (n.endsWith('.mp4')) return 'audio/mp4';
+  if (n.endsWith('.aiff') || n.endsWith('.aif')) return 'audio/aiff';
+  if (n.endsWith('.wma')) return 'audio/x-ms-wma';
+  return 'audio/mpeg';
+}
 async function importSongFiles(files) {
   if (!files || !files.length) return;
-  let added = 0;
+  let added = 0, skipped = 0;
   for (const f of files) {
-    if (!f.type || !f.type.startsWith('audio/')) continue;
-    const blob = new Blob([await f.arrayBuffer()], { type: f.type });
-    const title = f.name.replace(/\.[^.]+$/, '') || '未命名';
+    if (!isAudioFile(f)) { skipped++; continue; }
+    const mime = (f.type && f.type.startsWith('audio/')) ? f.type : mimeFromName(f.name);
+    const blob = new Blob([await f.arrayBuffer()], { type: mime });
+    const title = (f.name || '').replace(/\.[^.]+$/, '') || '未命名';
     await saveSong({ title, artist: '', blob, timestamp: Date.now() });
     added++;
   }
   await loadSongs();
   if (listenState.idx < 0 && listenState.songs.length) listenState.idx = 0;
   renderListenPage();
-  toast(added ? `已导入 ${added} 首` : '未检测到音频文件');
+  if (added) toast(`已导入 ${added} 首${skipped ? `，跳过 ${skipped} 个非音频文件` : ''}`);
+  else toast('未检测到音频文件');
 }
 function startListenLoop() {
   clearTimeout(listenSwitchTimer);
@@ -4027,7 +4082,7 @@ async function clearChat() {
   toast('已清除聊天记录');
 }
 async function exportData() {
-  const out = { __app: 'PrivateChat', __ver: 19, __at: new Date().toISOString() };
+  const out = { __app: 'PrivateChat', __ver: 20, __at: new Date().toISOString() };
   for (const name of STORES) {
     const rows = await getAll(name);
     out[name] = await Promise.all(rows.map(async r => { const o = Object.assign({}, r); if (o.blob instanceof Blob) o.blob = await blobToDataURL(o.blob); return o; }));
@@ -4071,7 +4126,7 @@ async function clearAll() {
     momentPin: { text: '', image: null }, removedSurveys: [],
     systemNotify: false, keepAlive: false
   };
-  meta = { lastOtherLetter: '', myLetterAt: 0, pendingReplies: [], dndUntil: 0, surveyInvite: null, listenSeconds: 0 };
+  meta = { lastOtherLetter: '', myLetterAt: 0, pendingReplies: [], dndUntil: 0, surveyInvite: null, listenSeconds: 0, lastLetterTime: 0 };
   customSurveys = []; surveyLog = []; surveyRun = null; surveyEditor = null;
   listenState.songs = []; listenState.idx = -1;
   stopKeepAlive();
@@ -4202,13 +4257,13 @@ function bindUI() {
         if (!name) return;
         if (!groupStore.card.includes(name)) { groupStore.card.push(name); await saveGroups(); }
         expandedGroups.card.add(name);
-        renderCardsTree();
+        renderCardPage();
       }
     });
   };
   $('#btnAddCard').onclick = () => $('#addCardPanel').classList.toggle('open');
   $('#btnBatchImport').onclick = () => $('#batchImportPanel').classList.toggle('open');
-  $('#btnBatchMode').onclick = () => { batchMode = !batchMode; pickedCards.clear(); renderCardsTree(); };
+  $('#btnBatchMode').onclick = () => { batchMode = !batchMode; pickedCards.clear(); renderCardPage(); };
   $('#btnDedupe').onclick = dedupeCards;
   $('#btnExpandAll').onclick = () => {
     const groups = [];
@@ -4228,13 +4283,13 @@ function bindUI() {
         if (!name) return;
         if (!groupStore.status.includes(name)) { groupStore.status.push(name); await saveGroups(); }
         expandedGroups.status.add(name);
-        renderStatusTree(); renderSettingsPools();
+        renderCardPage();
       }
     });
   };
   $('#btnAddStatus').onclick = () => $('#addStatusPanel').classList.toggle('open');
   $('#btnBatchStatus').onclick = () => $('#batchStatusPanel').classList.toggle('open');
-  $('#btnStatusBatchMode').onclick = () => { statusBatchMode = !statusBatchMode; pickedStatusIds.clear(); renderStatusTree(); };
+  $('#btnStatusBatchMode').onclick = () => { statusBatchMode = !statusBatchMode; pickedStatusIds.clear(); renderCardPage(); };
   $('#btnStatusDedupe').onclick = dedupeStatus;
   $('#statusAddBtn').onclick = addStatus;
   $('#batchStatusAdd').onclick = batchImportStatus;
@@ -4455,7 +4510,7 @@ function bindUI() {
 
   document.addEventListener('click', async e => {
     const dr = e.target.closest('[data-del-reply]');
-    if (dr) { await delOne('replyPool', Number(dr.dataset.delReply)); renderStatusTree(); renderSettingsPools(); return; }
+    if (dr) { await delOne('replyPool', Number(dr.dataset.delReply)); renderCardPage(); return; }
     const ds = e.target.closest('[data-del-sticker]');
     if (ds) { await delOne('stickers', Number(ds.dataset.delSticker)); renderStickerLib(); return; }
     const df = e.target.closest('[data-del-fav]');
